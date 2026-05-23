@@ -1,0 +1,289 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Blog - Kristjan Jurij Tarantelli</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+		<style>
+			/* ── Post list window ────────────────────────────────────── */
+			#posts-window {
+				max-height: 62vh;
+				overflow-y: auto;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				border-radius: 6px;
+				padding: 0.25em 0.5em;
+				background: rgba(0, 0, 0, 0.15);
+				scrollbar-width: thin;
+				scrollbar-color: rgba(255,255,255,0.2) transparent;
+			}
+			#posts-window::-webkit-scrollbar       { width: 6px; }
+			#posts-window::-webkit-scrollbar-track { background: transparent; }
+			#posts-window::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+			/* ── Individual card ─────────────────────────────────────── */
+			.post-card {
+				padding: 1.6em 1.8em;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+				transition: opacity 0.18s ease, transform 0.18s ease;
+			}
+			.post-card:last-child { border-bottom: none; }
+			.post-card.hidden {
+				display: none;
+			}
+			.post-card:hover { background: rgba(255,255,255,0.03); }
+
+			.post-meta {
+				font-size: 0.78em;
+				color: #888;
+				text-transform: uppercase;
+				letter-spacing: 0.1em;
+				margin: 0 0 0.4em;
+			}
+			.post-card h3 {
+				margin: 0 0 0.5em;
+				font-size: 1.1em;
+				line-height: 1.4;
+			}
+			.post-card h3 a { border-bottom: none; }
+			.post-card p {
+				margin: 0 0 0.9em;
+				font-size: 0.9em;
+				color: #bbb;
+				line-height: 1.6;
+			}
+
+			/* ── Search bar ──────────────────────────────────────────── */
+			#search-wrap {
+				display: flex;
+				align-items: center;
+				gap: 1em;
+				margin-bottom: 1.2em;
+			}
+			#search-wrap input[type="text"] {
+				flex: 1;
+				margin: 0;
+			}
+			#post-count {
+				font-size: 0.85em;
+				color: #888;
+				white-space: nowrap;
+			}
+
+			/* ── Highlighted search match ────────────────────────────── */
+			mark {
+				background: #f0a000;
+				color: #000;
+				padding: 0 2px;
+				border-radius: 2px;
+			}
+
+			/* ── Empty state ─────────────────────────────────────────── */
+			#no-results {
+				padding: 2em;
+				text-align: center;
+				color: #888;
+				font-style: italic;
+				display: none;
+			}
+		</style>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<header id="header">
+					<h1 id="logo"><a href="index.html">Kristjan Jurij Tarantelli</a></h1>
+					<nav id="nav">
+						<ul>
+							<li><a href="../index.html">Home</a></li>
+							<li><a href="my-path.html">My Path</a></li>
+							<li><a href="blog.html">Blog</a></li>
+						</ul>
+					</nav>
+				</header>
+
+			<!-- Blog -->
+				<section class="wrapper style1 special fade-up">
+					<div class="container">
+
+						<header class="major">
+							<h2>Blog</h2>
+							<p>Notes on robotics, security, and whatever else I'm thinking about.</p>
+						</header>
+
+						<!-- Search bar + counter -->
+						<div id="search-wrap">
+							<input
+								type="text"
+								id="search-input"
+								placeholder="Search posts…"
+								autocomplete="off"
+							/>
+							<span id="post-count"></span>
+						</div>
+
+						<!-- Scrollable post window -->
+						<div id="posts-window">
+							<div id="posts-list">
+								<p style="color:#888;padding:1.5em;">Loading posts…</p>
+							</div>
+							<p id="no-results">No posts match your search.</p>
+						</div>
+
+					</div>
+				</section>
+
+			<!-- Footer -->
+				<footer id="footer">
+					<ul class="icons">
+						<li><a href="https://scholar.google.com/citations?user=gPnyNtMAAAAJ&hl=en" class="icon brands alt fa-google"><span class="label">Google Scholar</span></a></li>
+						<li><a href="https://orcid.org/0009-0001-4726-9109" class="icon brands alt fa-orcid"><span class="label">ORCID</span></a></li>
+						<li><a href="https://www.linkedin.com/in/kristjan-tarantelli-b805a3234/" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+						<li><a href="https://github.com/kristoji/" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+						<li><a href="mailto:tarantelli.kristjan@gmail.com" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+						<li><a href="https://www.instagram.com/kristjan_tarantelli/" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy; Kristjan Jurij Tarantelli. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</footer>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/jquery.scrolly.min.js"></script>
+			<script src="../assets/js/jquery.dropotron.min.js"></script>
+			<script src="../assets/js/jquery.scrollex.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+
+		<!-- Blog logic -->
+		<script>
+		(function () {
+			var allPosts   = [];
+			var listEl     = document.getElementById('posts-list');
+			var noResults  = document.getElementById('no-results');
+			var countEl    = document.getElementById('post-count');
+			var searchInput = document.getElementById('search-input');
+
+			/* ── helpers ──────────────────────────────────────────── */
+
+			function escHtml(str) {
+				return String(str)
+					.replace(/&/g, '&amp;')
+					.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;');
+			}
+
+			// Wrap every occurrence of `query` in <mark> (case-insensitive)
+			function highlight(str, query) {
+				if (!query) return escHtml(str);
+				var safe = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+				return escHtml(str).replace(
+					new RegExp('(' + safe + ')', 'gi'),
+					'<mark>$1</mark>'
+				);
+			}
+
+			function makeCard(p) {
+				var div = document.createElement('div');
+				div.className = 'post-card';
+				div.dataset.slug = p.slug;
+				// Store normalised search corpus as a data attribute for fast filtering
+				div.dataset.corpus = [p.title, p.excerpt, p.text || ''].join(' ').toLowerCase();
+				div.innerHTML = [
+					'<p class="post-meta">' + escHtml(p.dateFormatted) + '</p>',
+					'<h3><a href="post.html?slug=' + escHtml(p.slug) + '">' + escHtml(p.title) + '</a></h3>',
+					'<p class="post-excerpt">' + escHtml(p.excerpt) + '</p>',
+					'<a href="post.html?slug=' + escHtml(p.slug) + '" class="button small">Read More</a>',
+				].join('');
+				return div;
+			}
+
+			function updateCount(visible, total) {
+				countEl.textContent = visible === total
+					? total + ' post' + (total !== 1 ? 's' : '')
+					: visible + ' of ' + total + ' post' + (total !== 1 ? 's' : '');
+			}
+
+			/* ── render all cards once ────────────────────────────── */
+
+			function renderAll() {
+				listEl.innerHTML = '';
+				allPosts.forEach(function (p) {
+					listEl.appendChild(makeCard(p));
+				});
+				updateCount(allPosts.length, allPosts.length);
+			}
+
+			/* ── filter cards in-place ────────────────────────────── */
+
+			function applyFilter(q) {
+				var qNorm   = q.toLowerCase().trim();
+				var cards   = listEl.querySelectorAll('.post-card');
+				var visible = 0;
+
+				cards.forEach(function (card) {
+					var matches = !qNorm || card.dataset.corpus.indexOf(qNorm) !== -1;
+					card.classList.toggle('hidden', !matches);
+
+					if (matches) {
+						visible++;
+						// Re-highlight the visible text fields
+						var p = allPosts.find(function (post) { return post.slug === card.dataset.slug; });
+						if (p) {
+							card.querySelector('h3 a').innerHTML   = highlight(p.title,  q.trim());
+							card.querySelector('.post-excerpt').innerHTML = highlight(p.excerpt, q.trim());
+						}
+					}
+				});
+
+				noResults.style.display = (visible === 0 && qNorm) ? 'block' : 'none';
+				updateCount(visible, allPosts.length);
+			}
+
+			/* ── debounce ─────────────────────────────────────────── */
+
+			function debounce(fn, ms) {
+				var t;
+				return function () { clearTimeout(t); t = setTimeout(fn.bind(this, arguments[0]), ms); };
+			}
+
+			/* ── fetch manifest and boot ──────────────────────────── */
+
+			fetch('../posts/manifest.json')
+				.then(function (r) {
+					if (!r.ok) throw new Error('HTTP ' + r.status);
+					return r.json();
+				})
+				.then(function (posts) {
+					allPosts = posts;
+					renderAll();
+				})
+				.catch(function () {
+					listEl.innerHTML = [
+						'<p style="color:#888;padding:1.5em;">',
+						'  Could not load posts/manifest.json.<br>',
+						'  Run <code>python3 generate_manifest.py</code> then serve over HTTP',
+						'  (e.g. <code>python3 -m http.server 8000</code>).',
+						'</p>'
+					].join('');
+				});
+
+			searchInput.addEventListener('input', debounce(function (e) {
+				applyFilter(e.target.value);
+			}, 150));
+
+			// Autofocus search on page load
+			searchInput.focus();
+		})();
+		</script>
+
+	</body>
+</html>

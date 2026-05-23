@@ -1,0 +1,223 @@
+<!DOCTYPE HTML>
+<!--
+    Single-post template.
+    URL: post.html?slug=YYYY-MM-DD
+    Fetches posts/YYYY-MM-DD.md and renders it client-side with marked.js.
+-->
+<html>
+	<head>
+		<title>Post — Kristjan Jurij Tarantelli</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../assets/css/noscript.css" /></noscript>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css" />
+		<style>
+			/* Left-align post body (section.special inherits text-align: center) */
+			#post-body {
+				text-align: left;
+			}
+
+			/* Full-width standalone images (markdown wraps them in <p><a><img></a></p>) */
+			#post-body p > img,
+			#post-body p > a > img {
+				width: 100%;
+				height: auto;
+				display: block;
+				border-radius: 4px;
+			}
+
+			/* Remove the extra bottom margin markdown adds after image paragraphs */
+			#post-body p:has(> img),
+			#post-body p:has(> a > img) {
+				margin-bottom: 1.5em;
+			}
+
+		</style>
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<header id="header">
+					<h1 id="logo"><a href="../index.html">Kristjan Jurij Tarantelli</a></h1>
+					<nav id="nav">
+						<ul>
+							<li><a href="../index.html">Home</a></li>
+							<li><a href="my-path.html">My Path</a></li>
+							<li><a href="blog.html">Blog</a></li>
+						</ul>
+					</nav>
+				</header>
+
+			<!-- Post -->
+				<section class="wrapper style1 special fade-up">
+					<div class="container" id="post-content">
+
+						<header class="major">
+							<p id="post-date" style="font-size: 0.85em; color: #aaa; text-transform: uppercase; letter-spacing: 0.1em;"></p>
+							<h2 id="post-title">Loading…</h2>
+						</header>
+
+						<div id="post-body"></div>
+
+						<footer class="major">
+							<ul class="actions special">
+								<li><a href="blog.html" class="button">Back to Blog</a></li>
+							</ul>
+						</footer>
+
+					</div>
+				</section>
+
+			<!-- Footer -->
+				<footer id="footer">
+					<ul class="icons">
+						<li><a href="https://scholar.google.com/citations?user=gPnyNtMAAAAJ&hl=en" class="icon brands alt fa-google"><span class="label">Google Scholar</span></a></li>
+						<li><a href="https://orcid.org/0009-0001-4726-9109" class="icon brands alt fa-orcid"><span class="label">ORCID</span></a></li>
+						<li><a href="https://www.linkedin.com/in/kristjan-tarantelli-b805a3234/" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+						<li><a href="https://github.com/kristoji/" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+						<li><a href="mailto:tarantelli.kristjan@gmail.com" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+						<li><a href="https://www.instagram.com/kristjan_tarantelli/" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy; Kristjan Jurij Tarantelli. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</footer>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/jquery.scrolly.min.js"></script>
+			<script src="../assets/js/jquery.dropotron.min.js"></script>
+			<script src="../assets/js/jquery.scrollex.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+
+		<!-- Post renderer -->
+		<script>
+		(function () {
+			var slug = new URLSearchParams(window.location.search).get('slug');
+			var titleEl  = document.getElementById('post-title');
+			var dateEl   = document.getElementById('post-date');
+			var bodyEl   = document.getElementById('post-body');
+
+			if (!slug) {
+				titleEl.textContent = 'Post not found';
+				bodyEl.innerHTML = '<p>No post slug was specified in the URL.</p>';
+				return;
+			}
+
+			/* ── helpers ───────────────────────────────────────────── */
+
+			function parseFrontmatter(text) {
+				if (!text.startsWith('---')) return { data: {}, content: text };
+				var end = text.indexOf('\n---\n', 4);
+				if (end === -1) return { data: {}, content: text };
+				var fmLines = text.slice(4, end).split('\n');
+				var data = {};
+				fmLines.forEach(function (line) {
+					var i = line.indexOf(':');
+					if (i > 0) data[line.slice(0, i).trim()] = line.slice(i + 1).trim();
+				});
+				return { data: data, content: text.slice(end + 5) };
+			}
+
+			function formatDate(dateStr) {
+				try {
+					var d = new Date(dateStr + 'T12:00:00Z');
+					return d.toLocaleDateString('en-GB', {
+						day: 'numeric', month: 'long', year: 'numeric'
+					});
+				} catch (e) { return dateStr; }
+			}
+
+			/*
+			 * ── Math extraction ─────────────────────────────────────────
+			 * Pull $$ and $ blocks out BEFORE passing to marked.js so that
+			 * marked never sees them (it would corrupt _subscripts_ and
+			 * *superscripts*). After marked runs we put them back rendered.
+			 */
+			function extractMath(text) {
+				var blocks = [];
+
+				// Display math: $$...$$
+				text = text.replace(/\$\$([\s\S]+?)\$\$/g, function (_, math) {
+					blocks.push({ display: true, math: math.trim() });
+					return '\n\nKATEXBLOCK' + (blocks.length - 1) + '\n\n';
+				});
+
+				// Inline math: $...$  (no newlines allowed inside)
+				text = text.replace(/\$([^\n$]+?)\$/g, function (_, math) {
+					blocks.push({ display: false, math: math.trim() });
+					return 'KATEXBLOCK' + (blocks.length - 1);
+				});
+
+				return { text: text, blocks: blocks };
+			}
+
+			function restoreMath(html, blocks) {
+				// Display blocks are wrapped in <p> by marked
+				html = html.replace(/<p>KATEXBLOCK(\d+)<\/p>/g, function (_, i) {
+					return katex.renderToString(blocks[i].math, {
+						displayMode: true, throwOnError: false
+					});
+				});
+				// Inline blocks sit directly in the text
+				html = html.replace(/KATEXBLOCK(\d+)/g, function (_, i) {
+					return katex.renderToString(blocks[i].math, {
+						displayMode: false, throwOnError: false
+					});
+				});
+				return html;
+			}
+
+			/* ── load marked.js + KaTeX in parallel, then render ── */
+
+			function loadScript(src) {
+				return new Promise(function (resolve, reject) {
+					var s = document.createElement('script');
+					s.src = src;
+					s.onload = resolve;
+					s.onerror = reject;
+					document.head.appendChild(s);
+				});
+			}
+
+			Promise.all([
+				loadScript('https://cdn.jsdelivr.net/npm/marked@9/marked.min.js'),
+				loadScript('https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js')
+			])
+			.then(function () {
+				return fetch('../posts/' + slug + '.md')
+					.then(function (r) {
+						if (!r.ok) throw new Error('HTTP ' + r.status);
+						return r.text();
+					});
+			})
+			.then(function (raw) {
+				var parsed  = parseFrontmatter(raw);
+				var data    = parsed.data;
+
+				var extracted = extractMath(parsed.content);
+				var markedHtml = marked.parse(extracted.text);
+				var finalHtml  = restoreMath(markedHtml, extracted.blocks);
+
+				var title = data.title || slug;
+				document.title = title + ' — Kristjan Jurij Tarantelli';
+				titleEl.textContent = title;
+				dateEl.textContent  = data.date ? formatDate(data.date) : '';
+				bodyEl.innerHTML    = finalHtml;
+			})
+			.catch(function () {
+				titleEl.textContent = 'Post not found';
+				bodyEl.innerHTML = '<p>Could not load <code>posts/' + slug + '.md</code>.</p>'; // path: ../posts/
+			});
+		})();
+		</script>
+
+	</body>
+</html>
